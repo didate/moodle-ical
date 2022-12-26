@@ -1,0 +1,11 @@
+BEGIN:VEVENT
+UID:{{.Uid}}
+SUMMARY:{{.Summary}}
+DESCRIPTION:{{.Description}}
+CLASS:PUBLIC
+LAST-MODIFIED:{{.LastModified}}
+LOCATION:{{.Location}}
+DTSTAMP:{{.LastModified}}
+DTSTART:{{.StartDate}}
+DTEND:{{.EndDate}}
+END:VEVENT
