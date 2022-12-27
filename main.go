@@ -72,8 +72,7 @@ func main() {
 
 func genIcs(tFname string, dest string) {
 
-	MYSQL_USER := os.Getenv("MYSQL_USER")
-	db, err := sql.Open("mysql", MYSQL_USER+":@tcp(127.0.0.1:3307)/bitnami_moodle")
+	db, err := sql.Open("mysql", os.Getenv("MYSQL_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -110,9 +109,7 @@ func genIcs(tFname string, dest string) {
 		datawriter.WriteString("\nEND:VCALENDAR")
 		datawriter.Flush()
 		file.Close()
-		log.Printf("generating %v%d.ics OK", dest, cat.id)
 	}
-
 }
 
 func getCategories(db *sql.DB) ([]category, error) {
@@ -134,7 +131,7 @@ func getCategories(db *sql.DB) ([]category, error) {
 
 func getEvents(db *sql.DB, categoryid int) ([]moodleEvent, error) {
 
-	res, err := db.Query(fmt.Sprintf("select evt.id as Uid, evt.name as eventname, evt.description as description, timestart, timeduration, evt.timemodified, categoryid, cat.name as categoryname, location from mdl_event evt, mdl_course_categories cat where evt.categoryid=cat.id and cat.id=%d", categoryid))
+	res, err := db.Query("select evt.id as Uid, evt.name as eventname, evt.description as description, timestart, timeduration, evt.timemodified, categoryid, cat.name as categoryname, location from mdl_event evt, mdl_course_categories cat where evt.categoryid=cat.id and cat.id= ?", categoryid)
 
 	if err != nil {
 		return nil, err
