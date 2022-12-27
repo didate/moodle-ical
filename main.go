@@ -109,6 +109,7 @@ func genIcs(tFname string, dest string) {
 		datawriter.WriteString("\nEND:VCALENDAR")
 		datawriter.Flush()
 		file.Close()
+		fmt.Printf("Generating ical for category #%d\n",cat.id)
 	}
 }
 
