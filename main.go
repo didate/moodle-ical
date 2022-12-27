@@ -67,7 +67,7 @@ func main() {
 	c.Start()
 
 	fs := http.FileServer(http.Dir(*dest))
-	http.ListenAndServe(":8091", fs)
+	http.ListenAndServe(":8080", fs)
 }
 
 func genIcs(tFname string, dest string) {
