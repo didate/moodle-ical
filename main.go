@@ -12,8 +12,7 @@ import (
 	"strings"
 	"text/template"
 	"time"
-
-	_ "github.com/go-sql-driver/mysql"
+        _ "github.com/lib/pq"
 	strip "github.com/grokify/html-strip-tags-go"
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron"
@@ -49,7 +48,6 @@ type category struct {
 
 func main() {
 	godotenv.Load()
-
 	tFname := flag.String("t", "", "Template file name")
 	dest := flag.String("d", "", "Destination folder")
 	flag.Parse()
@@ -65,14 +63,14 @@ func main() {
 	c := cron.New()
 	c.AddFunc("@every 10s", func() { genIcs(*tFname, *dest) })
 	c.Start()
-
 	fs := http.FileServer(http.Dir(*dest))
-	http.ListenAndServe(":8080", fs)
+	http.ListenAndServe(":8086",fs)
 }
 
 func genIcs(tFname string, dest string) {
 
-	db, err := sql.Open("mysql", os.Getenv("MYSQL_URL"))
+	db, err := sql.Open(os.Getenv("DB_TYPE"), os.Getenv("DB_URL"))
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -109,7 +107,6 @@ func genIcs(tFname string, dest string) {
 		datawriter.WriteString("\nEND:VCALENDAR")
 		datawriter.Flush()
 		file.Close()
-		fmt.Printf("Generating ical for category #%d\n",cat.id)
 	}
 }
 
@@ -132,7 +129,7 @@ func getCategories(db *sql.DB) ([]category, error) {
 
 func getEvents(db *sql.DB, categoryid int) ([]moodleEvent, error) {
 
-	res, err := db.Query("select evt.id as Uid, evt.name as eventname, evt.description as description, timestart, timeduration, evt.timemodified, categoryid, cat.name as categoryname, location from mdl_event evt, mdl_course_categories cat where evt.categoryid=cat.id and cat.id= ?", categoryid)
+	res, err := db.Query("select evt.id as Uid, evt.name as eventname, evt.description as description, timestart, timeduration, evt.timemodified, categoryid, cat.name as categoryname, location from mdl_event evt, mdl_course_categories cat where evt.categoryid=cat.id and cat.id= $1", categoryid)
 
 	if err != nil {
 		return nil, err

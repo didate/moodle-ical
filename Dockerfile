@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY testdata/template.txt ./
 
-COPY .env ./
+# COPY .env ./
 
 COPY go.sum ./
 COPY go.mod ./

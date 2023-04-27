@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    container_name: calendarws
+    restart: always
+    volumes:
+      - "calendar_file:/app/ics"
+    environment:
+      - DB_URL=postgres://user:password@localhost:5432/db?sslmode=disable
+      - DB_TYPE=postgres
+volumes:
+  calendar_file:
+    driver: local
+
+
+networks:
+  default:
+    external:
+      name: ent-network
